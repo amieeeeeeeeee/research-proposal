@@ -11,163 +11,170 @@
   :root{
     --parchment:#FBF3E4;
     --parchment-2:#F3E6CE;
-    --ink:#2B1E22;
-    --rose:#7C2D3E;
-    --rose-deep:#5C1F2C;
-    --gold:#B4832E;
+    --ink:#241A1E;
+    --rose:#5E1A28;
+    --rose-deep:#3D0F18;
+    --gold:#9C6B1E;
     --gold-light:#D9AE5F;
-    --evergreen:#1F4A3D;
-    --rule: rgba(43,30,34,0.18);
+    --evergreen:#1A3F34;
+    --rule: rgba(43,30,34,0.2);
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --parchment:#22181B;
-      --parchment-2:#2B1F23;
-      --ink:#F2E6D8;
-      --rose:#E8A5B4;
-      --gold:#D9AE5F;
-      --evergreen:#7FBFA9;
-      --rule: rgba(242,230,216,0.18);
+      --parchment:#22181B; --parchment-2:#2B1F23; --ink:#F5EAE0;
+      --rose:#F0AEBC; --rose-deep:#F6C7D1; --gold:#E0B569; --gold-light:#E0B569;
+      --evergreen:#8FD1BB; --rule: rgba(245,234,224,0.2);
     }
   }
   :root[data-theme="dark"]{
-    --parchment:#22181B; --parchment-2:#2B1F23; --ink:#F2E6D8;
-    --rose:#E8A5B4; --gold:#D9AE5F; --evergreen:#7FBFA9; --rule: rgba(242,230,216,0.18);
+    --parchment:#22181B; --parchment-2:#2B1F23; --ink:#F5EAE0;
+    --rose:#F0AEBC; --rose-deep:#F6C7D1; --gold:#E0B569; --gold-light:#E0B569;
+    --evergreen:#8FD1BB; --rule: rgba(245,234,224,0.2);
   }
   html{scroll-padding-top: env(safe-area-inset-top, 0px); scroll-behavior:smooth;}
   *{box-sizing:border-box;}
   body{
     margin:0; background:var(--parchment); color:var(--ink);
     font-family:'EB Garamond', Georgia, 'Times New Roman', serif;
-    font-size:19px; line-height:1.7;
+    font-size:19px; line-height:1.7; padding-bottom:78px;
   }
-  h1,h2,h3,.display{
-    font-family:'Cormorant Garamond', Georgia, serif;
-    font-weight:700; margin:0;
-  }
-  .wrap{max-width:760px; margin:0 auto; padding:0 28px;}
+  h1,h2,h3,.display{font-family:'Cormorant Garamond', Georgia, serif; font-weight:700; margin:0;}
+  .wrap{max-width:760px; margin:0 auto; padding:0 28px; position:relative;}
   .rule{border:none; border-top:1px solid var(--rule); margin:2.4em 0;}
 
-  /* --- nav dots for live presenting --- */
-  nav.dots{
-    position:fixed; right:14px; top:50%; transform:translateY(-50%);
-    display:flex; flex-direction:column; gap:10px; z-index:20;
+  /* princess silhouette symbol, reused as decoration */
+  svg.hidden-defs{position:absolute; width:0; height:0;}
+  .princess-deco{color:var(--rose); opacity:0.85;}
+  .princess-watermark{
+    position:absolute; right:-10px; bottom:-10px; width:180px; height:auto; color:var(--gold);
+    opacity:0.16; pointer-events:none;
   }
-  nav.dots a{
-    width:9px; height:9px; border-radius:50%; background:transparent;
-    border:1.4px solid var(--gold); display:block; text-indent:-9999px;
-    transition: background .25s ease;
+  .princess-flourish{width:34px; height:auto; color:var(--gold); display:block; margin:0 auto 14px;}
+  .divider-wrap{display:flex; justify-content:center; align-items:center; gap:14px; margin:10px 0 0;}
+  .divider-line{width:70px; height:1px; background:var(--rule);}
+  .divider-princess{width:26px; height:auto; color:var(--gold);}
+
+  /* --- bottom journey bar --- */
+  .journey{
+    position:fixed; left:0; right:0; bottom:0; z-index:30;
+    display:flex; align-items:center; gap:10px;
+    padding:10px 16px calc(10px + env(safe-area-inset-bottom, 0px));
+    background:var(--parchment); border-top:1px solid var(--rule);
   }
-  nav.dots a:hover, nav.dots a:focus-visible{background:var(--gold-light);}
-  @media (max-width: 680px){ nav.dots{display:none;} }
+  .jbtn{
+    flex:0 0 auto; width:34px; height:34px; border-radius:50%;
+    border:1.4px solid var(--gold); background:transparent; color:var(--rose-deep);
+    font-family:'Cormorant Garamond', serif; font-size:1.3rem; line-height:1;
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .jbtn:hover, .jbtn:focus-visible{background:var(--parchment-2);}
+  .jbtn:disabled{opacity:0.3; cursor:default;}
+  .jtrack{position:relative; flex:1 1 auto; height:46px; min-width:0;}
+  .jpath-svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
+  .jpath-svg path{fill:none; stroke:var(--gold); stroke-width:1.6; stroke-dasharray:1 7; stroke-linecap:round; opacity:0.85;}
+  .jdot{
+    position:absolute; width:8px; height:8px; margin:-4px 0 0 -4px; border-radius:50%;
+    background:var(--parchment); border:1.4px solid var(--gold); transition:background .2s ease, transform .2s ease;
+  }
+  .jdot.seen{background:var(--gold-light);}
+  .jdot.active{background:var(--rose); border-color:var(--rose); transform:scale(1.3);}
+  .jcrown{
+    position:absolute; width:26px; height:26px; margin:-13px 0 0 -13px;
+    color:var(--rose); transition: left .5s cubic-bezier(.4,0,.2,1), top .5s cubic-bezier(.4,0,.2,1);
+    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.15));
+  }
+  .jcount{flex:0 0 auto; font-family:'Cormorant Garamond', serif; font-style:italic; color:var(--ink); opacity:0.75; font-size:0.95rem; min-width:3.5em; text-align:right;}
+  @media (max-width: 560px){ .jcount{display:none;} .journey{gap:8px;} }
 
   /* --- hero --- */
   .hero{
     min-height:92vh; min-height:92svh;
     display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:60px 24px; position:relative;
-    background:
-      radial-gradient(ellipse at 50% -10%, var(--parchment-2) 0%, transparent 60%),
-      var(--parchment);
+    text-align:center; padding:60px 24px; position:relative; overflow:hidden;
+    background: radial-gradient(ellipse at 50% -10%, var(--parchment-2) 0%, transparent 60%), var(--parchment);
   }
   .crown{width:56px; height:56px; margin-bottom:18px; color:var(--gold);}
-  .eyebrow{
-    font-family:'EB Garamond', serif; font-style:italic; color:var(--rose);
-    font-size:1.05rem; letter-spacing:0.02em; margin-bottom:14px;
-  }
-  .hero h1{
-    font-size:clamp(2.6rem, 7vw, 4.6rem); color:var(--rose-deep); line-height:1.05;
-    max-width:14ch;
-  }
-  :root[data-theme="dark"] .hero h1, @media (prefers-color-scheme: dark){.hero h1{color:var(--rose);}}
-  .hero .subtitle{
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
-    font-size:clamp(1.15rem, 2.4vw, 1.45rem); max-width:36ch; margin-top:18px; opacity:0.9;
-  }
-  .hero .meta{
-    margin-top:34px; font-size:0.98rem; color:var(--evergreen); font-style:italic;
-  }
-  .scrolldown{margin-top:46px; font-size:0.85rem; letter-spacing:0.04em; color:var(--ink); opacity:0.55;}
+  .eyebrow{font-family:'EB Garamond', serif; font-style:italic; color:var(--rose); font-size:1.05rem; margin-bottom:14px;}
+  .hero h1{font-size:clamp(2.6rem, 7vw, 4.6rem); color:var(--rose-deep); line-height:1.05; max-width:14ch;}
+  .hero .subtitle{font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500; font-size:clamp(1.15rem, 2.4vw, 1.45rem); max-width:36ch; margin-top:18px; opacity:0.92;}
+  .hero .meta{margin-top:34px; font-size:0.98rem; color:var(--evergreen); font-style:italic;}
+  .scrolldown{margin-top:46px; font-size:0.85rem; letter-spacing:0.04em; color:var(--ink); opacity:0.6;}
 
   /* --- chapters --- */
   section.chapter{padding:88px 0 20px;}
-  .chnum{
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500;
-    color:var(--gold); font-size:1.15rem; display:block; margin-bottom:6px;
-  }
-  section.chapter h2{
-    font-size:clamp(1.9rem, 4.4vw, 2.7rem); color:var(--rose-deep); margin-bottom:0.6em; max-width:20ch;
-  }
-  @media (prefers-color-scheme: dark){section.chapter h2{color:var(--rose);}}
-  :root[data-theme="dark"] section.chapter h2{color:var(--rose);}
+  .chnum{font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:500; color:var(--gold); font-size:1.15rem; display:block; margin-bottom:6px;}
+  section.chapter h2{font-size:clamp(1.9rem, 4.4vw, 2.7rem); color:var(--rose-deep); margin-bottom:0.6em; max-width:22ch;}
+  section.chapter h3{font-family:'Cormorant Garamond', serif; font-weight:700; color:var(--rose); font-size:1.35rem; margin:1.5em 0 0.5em;}
   section.chapter p{margin:0 0 1.1em;}
-  .lede{
-    font-family:'Cormorant Garamond', serif; font-weight:600; font-size:1.4rem;
-    color:var(--rose); line-height:1.4; margin-bottom:0.9em;
-  }
-  .question-box{
-    border-left:3px solid var(--gold); padding:6px 0 6px 22px; margin:1.4em 0;
-    font-family:'Cormorant Garamond', serif; font-style:italic; font-size:1.35rem; color:var(--evergreen);
-  }
+  .lede{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:1.4rem; color:var(--rose); line-height:1.4; margin-bottom:0.9em;}
+  .question-box{border-left:3px solid var(--gold); padding:6px 0 6px 22px; margin:1.4em 0; font-family:'Cormorant Garamond', serif; font-style:italic; font-weight:600; font-size:1.35rem; color:var(--evergreen);}
+  .metaline{font-size:0.95rem; color:var(--ink); opacity:0.75; font-style:italic;}
   ul.concepts{list-style:none; padding:0; margin:1.4em 0;}
-  ul.concepts li{
-    padding:14px 0 14px 0; border-top:1px solid var(--rule);
-  }
+  ul.concepts li{padding:14px 0; border-top:1px solid var(--rule); display:flex; gap:12px; align-items:flex-start;}
   ul.concepts li:last-child{border-bottom:1px solid var(--rule);}
-  ul.concepts .term{
-    font-family:'Cormorant Garamond', serif; font-weight:700; color:var(--rose-deep); font-size:1.15rem;
-  }
-  @media (prefers-color-scheme: dark){ul.concepts .term{color:var(--rose);}}
-  :root[data-theme="dark"] ul.concepts .term{color:var(--rose);}
-
-  .puzzle{
-    background:var(--parchment-2); border-radius:2px; padding:26px 28px; margin:1.6em 0;
-    font-family:'Cormorant Garamond', serif; font-size:1.3rem; font-style:italic; color:var(--rose-deep);
-  }
-  @media (prefers-color-scheme: dark){.puzzle{color:var(--rose);}}
-  :root[data-theme="dark"] .puzzle{color:var(--rose);}
-
-  .source{font-size:0.92rem; color:var(--ink); opacity:0.75;}
+  ul.concepts .term{font-family:'Cormorant Garamond', serif; font-weight:700; color:var(--rose); font-size:1.15rem;}
+  ul.concepts svg{flex:0 0 auto; width:20px; height:20px; margin-top:3px; color:var(--gold);}
+  .puzzle{background:var(--parchment-2); border-radius:2px; padding:26px 28px; margin:1.6em 0; font-family:'Cormorant Garamond', serif; font-size:1.3rem; font-style:italic; font-weight:600; color:var(--rose);}
+  .source{font-size:0.92rem; color:var(--ink); opacity:0.78;}
   .source b{opacity:1;}
+  .expect-list{margin:1.4em 0; padding-left:0; list-style:none; counter-reset:exp;}
+  .expect-list li{counter-increment:exp; padding:10px 0 10px 40px; position:relative; border-top:1px solid var(--rule);}
+  .expect-list li::before{content:counter(exp); position:absolute; left:0; top:10px; font-family:'Cormorant Garamond', serif; font-weight:700; color:var(--gold); font-size:1.2rem;}
 
-  .divider-wrap{display:flex; justify-content:center; margin:10px 0 0;}
-  .divider{width:120px; height:22px; color:var(--gold); opacity:0.8;}
-
-  .transparency{
-    background:var(--evergreen); color:var(--parchment); border-radius:2px;
-    padding:30px 30px; margin:1.6em 0;
-  }
+  .transparency{background:var(--evergreen); color:var(--parchment); border-radius:2px; padding:30px 30px; margin:1.6em 0;}
   .transparency h2{color:var(--parchment); font-size:1.6rem; margin-bottom:0.5em;}
-  .transparency p{opacity:0.95;}
-  .transparency .tag{
-    font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.95rem; opacity:0.85; margin-bottom:12px; display:block;
-  }
+  .transparency p{opacity:0.97;}
+  .transparency .tag{font-family:'Cormorant Garamond',serif; font-style:italic; font-size:0.95rem; opacity:0.88; margin-bottom:12px; display:block;}
 
-  .reflection{
-    border:1px dashed var(--gold); padding:28px 26px; margin:1.6em 0; border-radius:2px;
-  }
-  .reflection .tag{
-    font-family:'EB Garamond', serif; font-style:italic; font-size:0.95rem; color:var(--gold); display:block; margin-bottom:10px;
-  }
+  .reflection{border:1px dashed var(--gold); padding:28px 26px; margin:1.6em 0; border-radius:2px;}
+  .reflection .tag{font-family:'EB Garamond', serif; font-style:italic; font-size:0.95rem; color:var(--gold); display:block; margin-bottom:10px;}
 
-  footer{
-    text-align:center; padding:70px 24px 90px; font-size:0.9rem; opacity:0.6; font-style:italic;
+  /* --- poll / hands-up widget --- */
+  .poll-card{
+    background:var(--parchment-2); border:1px solid var(--rule); border-radius:4px;
+    padding:30px 28px; margin:1.6em 0; text-align:center;
   }
+  .poll-card .eyebrow{margin-bottom:8px;}
+  .poll-q{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:1.6rem; color:var(--rose-deep); margin-bottom:6px;}
+  .poll-sub{font-size:0.95rem; opacity:0.75; font-style:italic; margin-bottom:22px;}
+  .poll-counter{display:inline-flex; align-items:center; gap:18px; background:var(--parchment); border-radius:999px; padding:10px 22px; border:1px solid var(--rule);}
+  .poll-btn{width:38px; height:38px; border-radius:50%; border:1.4px solid var(--gold); background:transparent; color:var(--rose-deep); font-size:1.3rem; cursor:pointer; display:flex; align-items:center; justify-content:center;}
+  .poll-btn:hover{background:var(--parchment-2);}
+  .poll-count{font-family:'Cormorant Garamond', serif; font-weight:700; font-size:2rem; color:var(--rose); min-width:1.6ch; text-align:center;}
+  .poll-label{font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase; opacity:0.6;}
+  .poll-hint{margin-top:16px; font-size:0.88rem; opacity:0.65; font-style:italic;}
+
+  footer{text-align:center; padding:70px 24px 40px; font-size:0.9rem; opacity:0.65; font-style:italic;}
+  footer .princess-flourish{margin-bottom:18px;}
 </style>
 </head>
 <body>
 
-<nav class="dots" aria-label="Section navigation">
-  <a href="#hero" title="Title">Title</a>
-  <a href="#question" title="Research question">Question</a>
-  <a href="#epistemology" title="Epistemological positioning">Epistemology</a>
-  <a href="#contribution" title="Contribution">Contribution</a>
-  <a href="#literature" title="Literature review">Literature</a>
-  <a href="#framework" title="Analytical framework">Framework</a>
-  <a href="#ai" title="AI transparency statement">AI</a>
-  <a href="#reflection" title="Reflection">Reflection</a>
+<svg class="hidden-defs" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="princess-icon" viewBox="0 0 100 150">
+    <path d="M35 12 L40 24 L46 10 L50 22 L54 10 L60 24 L65 12" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="50" cy="34" r="13" fill="currentColor"/>
+    <path d="M40 46 C24 62 14 98 21 140 L79 140 C86 98 76 62 60 46 C56 51 44 51 40 46 Z" fill="currentColor"/>
+  </symbol>
+</svg>
+
+<nav class="journey" aria-label="Section navigation">
+  <button class="jbtn" id="prevBtn" aria-label="Previous section">‹</button>
+  <div class="jtrack" id="jtrack">
+    <svg class="jpath-svg" id="jpathSvg"><path id="jpath" d=""></path></svg>
+    <div id="jdots"></div>
+    <svg class="jcrown" id="jcrown" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 44 L8 24 L20 34 L32 16 L44 34 L56 24 L56 44 Z" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+      <circle cx="8" cy="20" r="4" fill="currentColor"/>
+      <circle cx="32" cy="12" r="4" fill="currentColor"/>
+      <circle cx="56" cy="20" r="4" fill="currentColor"/>
+      <line x1="8" y1="48" x2="56" y2="48" stroke="currentColor" stroke-width="4"/>
+    </svg>
+  </div>
+  <button class="jbtn" id="nextBtn" aria-label="Next section">›</button>
+  <span class="jcount" id="jcount">1 / 11</span>
 </nav>
 
 <header class="hero" id="hero">
@@ -178,98 +185,128 @@
     <circle cx="56" cy="20" r="3" fill="currentColor"/>
     <line x1="8" y1="48" x2="56" y2="48" stroke="currentColor" stroke-width="2.5"/>
   </svg>
-  <span class="eyebrow">A Research Proposal, told as it was studied</span>
+  <span class="eyebrow">Presentation #1 · Field Notebook · the interpretivist tradition</span>
   <h1>Once Upon a Gender</h1>
-  <p class="subtitle">Disney Princess Stories and Young Women's Understandings of Femininity</p>
-  <p class="meta">An interpretivist study of memory, meaning, and the messages we keep or leave behind</p>
-  <p class="scrolldown">scroll, as one turns a page ↓</p>
+  <p class="subtitle">How Disney princess stories shape the way young women understand femininity and gender roles.</p>
+  <p class="meta">An interpretivist study, Fall 2026</p>
+  <svg class="princess-watermark" aria-hidden="true"><use href="#princess-icon"/></svg>
+  <p class="scrolldown">press → or scroll, as one turns a page ↓</p>
 </header>
 
 <main class="wrap">
 
-  <section class="chapter" id="question">
-    <span class="chnum">Chapter I</span>
-    <h2>The Question</h2>
-    <p class="lede">We are not asking what Disney did to anyone. We are asking what young women make of what they watched.</p>
-    <div class="question-box">
-      How do young women aged 18–25 reflect on the ways Disney princess stories shaped their understandings of femininity and gender roles?
+  <section class="chapter" id="poll">
+    <div class="poll-card">
+      <span class="eyebrow">Before we begin</span>
+      <p class="poll-q">Who watched Disney fairytales growing up?</p>
+      <p class="poll-sub">Raise your hand if you did — I'm counting.</p>
+      <div class="poll-counter">
+        <button class="poll-btn" id="pollMinus" aria-label="Decrease count">−</button>
+        <div>
+          <div class="poll-count" id="pollCount">0</div>
+          <div class="poll-label">hands up</div>
+        </div>
+        <button class="poll-btn" id="pollPlus" aria-label="Increase count">+</button>
+      </div>
+      <p class="poll-hint">This is the room's own show of hands, not a claim about anyone beyond it — but it's exactly the kind of memory my interviews will ask people to unpack.</p>
     </div>
-    <p>The question is written in the past-into-present tense on purpose. It doesn't ask "does Disney cause X." It asks participants to look back, as adults, at something they watched as children, and to tell us — in their own words — what they think it meant. That looking-back is itself the data.</p>
+  </section>
+
+  <hr class="rule">
+
+  <section class="chapter" id="puzzle">
+    <span class="chnum">Chapter I</span>
+    <h2>The Puzzle</h2>
+    <p class="lede">The old story</p>
+    <p>Disney princesses have long offered ideas about beauty, romance, marriage, femininity, and independence. But the princess has changed — from Cinderella and Sleeping Beauty, to Mulan, Rapunzel, Elsa, and Moana.</p>
+    <div class="puzzle">If the stories changed, did the meanings young women took from them change too?</div>
+    <p><span class="source"><b>Litt (2019)</b></span> traces how Disney's stories and products in the 1950s tied gender together with romance, family, and growing up. At the same time, <span class="source"><b>England, Descartes &amp; Collier-Meek (2011)</b></span> found that gender portrayals became more complex over time, even though the movement toward equality was not a straight line. So the puzzle isn't simply "are Disney princesses feminist?" It's: how do the people who grew up with these stories understand them now?</p>
+  </section>
+
+  <hr class="rule">
+
+  <section class="chapter" id="question">
+    <span class="chnum">Chapter II</span>
+    <h2>The Research Question</h2>
+    <div class="question-box">How do young women reflect on the ways Disney princess stories have shaped their understandings of femininity and gender roles?</div>
+    <p class="metaline">Population: young women with childhood exposure to Disney princess stories · Method: semi-structured interviews · Fall 2026</p>
+    <p>I am not assuming Disney definitely shaped every participant. I'm asking participants to reflect on whether and how they experienced that influence. Someone might say Disney strongly shaped their ideas about femininity; someone else might say it had almost no effect. Both responses are useful data.</p>
   </section>
 
   <hr class="rule">
 
   <section class="chapter" id="epistemology">
-    <span class="chnum">Chapter II</span>
-    <h2>How We Will Look</h2>
-    <p class="lede">Epistemological positioning: Interpretivism</p>
-    <p>This study does not treat femininity as a fixed set of traits that Disney either installs correctly or incorrectly. It treats femininity as something people <em>make sense of</em> — differently, depending on who they are, who they watched with, and what else was happening in their lives at the time. There is no single true effect of a Disney film waiting to be measured; there are as many understandings as there are people who watched.</p>
-    <p>That is what makes the question interpretivist rather than positivist. We are not testing a hypothesis about how much exposure predicts which attitude. We are generating rich, first-person accounts of meaning-making, through semi-structured interviews, and treating each account as valid data regardless of what it concludes.</p>
-    <div class="puzzle">
-      If one participant says <em>"Disney taught me that women should be beautiful and find love,"</em> and another says <em>"I watched Disney constantly and it had absolutely no effect on me,"</em> — both are useful. Neither is the "correct" finding we were looking for.
-    </div>
-    <p>Our job is not to adjudicate between these two women. It is to understand how each of them arrived at her own reading — what she accepted, what she pushed back on, and what she simply never thought about twice.</p>
+    <span class="chnum">Chapter III</span>
+    <h2>Where I Stand Epistemologically</h2>
+    <p class="lede">Interpretivism</p>
+    <p>Research that asks <em>what does something mean to the people who experienced it</em> — rather than <em>how much does X cause Y</em>.</p>
+    <p>This fits because my question is about meaning and interpretation, not measurement. I want participants' own accounts rather than predefined categories, and I don't assume every woman interpreted Disney the same way. There is no single correct effect waiting to be found — there are as many understandings as there are people who watched.</p>
   </section>
 
   <hr class="rule">
 
   <section class="chapter" id="contribution">
-    <span class="chnum">Chapter III</span>
-    <h2>Why It Matters</h2>
-    <p class="lede">Contribution</p>
-    <p>Most existing work on Disney princesses and gender falls into one of two camps: studies that analyse what the films <em>contain</em> (content analyses of dialogue, behaviour, appearance), and studies of how <em>children</em> respond to princess media in the moment of watching. What is comparatively rare is asking adults to look back across time — to narrate how, if at all, those early messages travelled with them into how they understand being a woman today.</p>
-    <p>This study contributes a retrospective, meaning-making account from the audience itself, of one of the most globally distributed sources of gendered storytelling that exists. It does not claim to prove an effect. It aims to describe, in participants' own terms, the different ways early media messages about gender get carried, altered, or set down along the way.</p>
+    <span class="chnum">Chapter IV</span>
+    <h2>What This Adds</h2>
+    <p class="lede">From representation to interpretation</p>
+    <p>Most existing research asks what gender roles Disney films portray. My study asks how young women themselves understand those messages. I'm interested in what participants remember, what they think those stories communicated about femininity, and whether they accepted, rejected, or reinterpreted them.</p>
+    <p>To be precise about the claim: audience interpretation has already been studied elsewhere, so this isn't an empty gap. The contribution is the specific focus — young women aged 18–25, reflecting as adults on their own childhood experience, in their own words.</p>
   </section>
 
   <hr class="rule">
 
+  <div class="divider-wrap" aria-hidden="true"><span class="divider-line"></span><svg class="divider-princess"><use href="#princess-icon"/></svg><span class="divider-line"></span></div>
+
   <section class="chapter" id="literature">
-    <span class="chnum">Chapter IV</span>
+    <span class="chnum">Chapter V</span>
     <h2>What We Already Know</h2>
-    <p class="lede">Literature review</p>
-    <p>Two bodies of work set up the puzzle behind this study.</p>
-    <p>The first examines what Disney princess films actually <em>portray</em>. <span class="source"><b>England, Descartes, and Collier-Meek (2011)</b>, in <em>Sex Roles</em>,</span> coded the behavioural characteristics of prince and princess characters across the nine classic-era Disney Princess films. They found consistently stereotyped gender portrayals throughout — but also found that those portrayals grew more complex over time, with no straightforward, linear march toward equality. Even the most recent film they studied, <em>The Princess and the Frog</em>, still carried some conventional gender scripting alongside its more modern touches.</p>
-    <p>The second body of work looks at <em>audiences</em>, not texts. <span class="source"><b>Anna Zsubori's</b> research with tween audiences in Hungary</span> is especially useful here, because rather than asking what princess films say, it asks what children themselves do with the idea of "the princess" — how they actively interpret, question, and locally reinterpret it, shaped by their own cultural and social context, rather than simply receiving it. Her work is a reminder that audiences are never blank pages.</p>
-    <div class="puzzle">
-      We know a great deal about what Disney princesses represent. We know children are active interpreters, not passive recipients, in the moment of watching. What we know far less about is how the girls who grew up watching them make sense of those messages <em>later</em> — once girlhood is behind them and femininity is something they are now living, not just watching.
-    </div>
-    <p>That gap is where this study sits: content research tells us what was said; audience research with children tells us it wasn't absorbed uncritically. This study asks what happened to those messages afterwards — in memory, in adulthood, in the process of becoming a woman rather than watching one on screen.</p>
+    <h3>Camp 1 — What Disney represented</h3>
+    <p><span class="source"><b>Litt (2019)</b></span> examines Cinderella, Sleeping Beauty, Peter Pan, and Alice in Wonderland alongside toys, books, and advertising, showing how 1950s Disney linked gender to romance, family, and growing up. <span class="source"><b>England, Descartes &amp; Collier-Meek (2011)</b>, Sex Roles</span> coded gender-role behaviour across the nine classic-era princess films and found consistently stereotyped portrayals — though ones that grew more complex over time.</p>
+    <h3>Camp 2 — The princess changed</h3>
+    <p><span class="source"><b>Hine, England, Lopreore, Skora Horgan &amp; Hartwell (2018)</b>, Social Sciences</span> studied princes and princesses across films released 2009–2016 (<em>The Princess and the Frog</em>, <em>Tangled</em>, <em>Brave</em>, <em>Frozen</em>, <em>Moana</em>) and found princesses displaying an increasingly even mix of masculine and feminine traits — more balanced, "androgynous" profiles than earlier eras. Even popular commentary noticed the shift: the <span class="source"><b>National Organization for Women (2011)</b></span> described <em>Tangled</em> as Disney moving closer to embracing feminism.</p>
+    <h3>Camp 3 — The audience interprets</h3>
+    <p><span class="source"><b>Hine, Ivanovic &amp; England (2018)</b></span> studied 131 children aged 8–9 and how they understood "old" versus "new" princess characters, including Sleeping Beauty and Moana. Representation is not the same as automatic influence — people interpret media through their own experience, which is exactly why this study asks participants for their own interpretations rather than assuming a single effect.</p>
+    <div class="puzzle">So where is my study? We know what gender roles appear in Disney. We know how the princesses have changed. We know children actively interpret different princesses in the moment of watching. What we know far less about is how the women who grew up with these stories make sense of them looking back, once girlhood is behind them.</div>
   </section>
 
   <hr class="rule">
 
   <section class="chapter" id="framework">
-    <span class="chnum">Chapter V</span>
+    <span class="chnum">Chapter VI</span>
     <h2>Analytical Framework, Including Positionality</h2>
-    <p class="lede">Gender socialization and meaning-making</p>
-    <p>The study is oriented by gender socialization theory — the idea that people learn cultural scripts for gendered behaviour partly through the media they consume as children — read together with a meaning-making, audience-reception lens that treats viewers as active interpreters rather than passive recipients of those scripts. Three sensitising concepts, rather than fixed hypotheses, guide the interview design and the analysis:</p>
+    <p class="lede">My lens · three sensitising concepts</p>
     <ul class="concepts">
-      <li><span class="term">Femininity</span> — what participants understand being a "girl" or "woman" to mean, in their own words.</li>
-      <li><span class="term">Gender expectations</span> — ideas participants encountered about how women are expected to behave, look, love, work, or relate to others.</li>
-      <li><span class="term">Negotiation</span> — the ways participants accepted, rejected, reinterpreted, or simply ignored the messages Disney offered them.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg><div><span class="term">Femininity</span> — what being a "girl" or "woman" means in the stories participants remember.</div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg><div><span class="term">Gender expectations</span> — what the stories suggested women should be like: how they behave, look, love, work, relate to others.</div></li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/></svg><div><span class="term">Negotiation</span> — whether participants accepted, rejected, reinterpreted, or simply ignored those messages.</div></li>
     </ul>
-    <p>Sensitising concepts are used deliberately instead of hypotheses. They orient attention during interviews and coding without predicting an outcome — they tell us <em>where to listen</em>, not <em>what we expect to hear</em>.</p>
+    <p>These are not hypotheses I am trying to prove — they are sensitising concepts. They tell me where to listen during interviews, not what I will find.</p>
     <p class="lede" style="margin-top:1.6em;">Positionality</p>
-    <p>I come to this project as someone who grew up watching Disney princess films myself, which is part of why the question interests me — but it also means I carry my own memories and assumptions about what these films "mean," which could quietly shape how I hear participants during interviews or how I read their transcripts afterwards. I try to manage this by treating my own reading of Disney as one more interpretation among many, not the benchmark participants' answers are checked against, and by staying alert — in the interview and in analysis — to moments where I might be nudging an account toward a reading I already hold. I note these moments as they come up, rather than assuming I can remove myself from the analysis entirely.</p>
+    <p>I am partly an insider: I belong to the same broad generation as my participants and carry my own experiences with Disney and with ideas about femininity. That can help me understand references and childhood memories, but it also means I might hear my own experience echoed back in participants' answers rather than genuinely new ones. So I need to keep interviews open, listen for difference rather than similarity, and stay alert to moments where I might be nudging an account toward a reading I already hold.</p>
   </section>
 
   <hr class="rule">
 
-  <div class="divider-wrap">
-    <svg class="divider" viewBox="0 0 120 22" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M0 11 H45" stroke="currentColor" stroke-width="1.2"/>
-      <path d="M75 11 H120" stroke="currentColor" stroke-width="1.2"/>
-      <circle cx="60" cy="11" r="4" fill="currentColor"/>
-      <circle cx="50" cy="11" r="1.6" fill="currentColor"/>
-      <circle cx="70" cy="11" r="1.6" fill="currentColor"/>
-    </svg>
-  </div>
+  <section class="chapter" id="expect">
+    <span class="chnum">Chapter VII</span>
+    <h2>What I Expect — and Could Be Wrong</h2>
+    <ol class="expect-list">
+      <li>Some participants may describe Disney as reinforcing traditional ideas about beauty and romance.</li>
+      <li>Others may point to newer princesses as offering different, more active models of femininity.</li>
+      <li>Some may describe a tension between the messages they absorbed as children and what they believe now.</li>
+    </ol>
+    <p>Interpretivism doesn't mean having no expectations — it means staying genuinely open to being wrong. If someone tells me Disney had no meaningful influence at all, that isn't a failed interview. It's still an important finding.</p>
+  </section>
+
+  <hr class="rule">
+
+  <div class="divider-wrap" aria-hidden="true"><span class="divider-line"></span><svg class="divider-princess"><use href="#princess-icon"/></svg><span class="divider-line"></span></div>
 
   <section class="chapter" id="ai">
     <div class="transparency">
       <span class="tag">roughly 30 seconds, spoken</span>
-      <h2>A Note on Working with AI</h2>
-      <p>I used AI as a thinking and building partner, not as an author. For the proposal, I brought my own research question, sensitising concepts, and sources, and used AI to pressure-test whether the design was genuinely interpretivist and to sharpen the wording of the puzzle. For this page, I described the assignment and the content, and AI drafted the HTML and design and talked me through publishing it — I did not know how to code this myself beforehand. Every claim, source, and concept on this page is one I can explain and defend without it.</p>
+      <h2>Working with AI · Transparency</h2>
+      <p>I used AI as a thinking and building partner, not as an author. It helped me develop and narrow the research question, sort the literature into camps, and compare possible analytical frameworks — but I read and checked every source myself, and the final research decisions are mine. For this page, I described the assignment and content, and AI drafted the HTML, the layout, and walked me through publishing it on GitHub Pages, since I didn't know how to code this beforehand. Every claim, source, and concept here is one I can explain and defend without it.</p>
     </div>
   </section>
 
@@ -280,16 +317,93 @@
     <h2>What I Understand — and Don't, Yet</h2>
     <div class="reflection">
       <span class="tag">What working with AI helped me understand, and what I still don't understand about my research design</span>
-      <p>Working through this with AI helped me understand, more clearly than reading about it in the abstract, <em>why</em> an interpretivist question has to be written the way it's written — that phrases like "how do participants reflect on" are doing real epistemological work, not just softer wording, and that a positivist version of this question would have looked completely different. It also helped me see positionality as an ongoing practice rather than a single paragraph you write once and file away.</p>
-      <p>What I'm still not fully settled on is how much of what a participant tells me in an interview, years after childhood, is really "what Disney did" versus a story she's since built about her own past — and whether that distinction even matters for a study like this one, or whether it's a false distinction I'm still trying to let go of.</p>
+      <p>Working through this helped me understand that I can't simply point to Disney's gender representation and conclude it shaped women's identities — representation is not the same thing as influence, and interpretivism means taking participants' own meanings seriously rather than presuming an effect and going looking for it.</p>
+      <p>What I still haven't settled: how do I tell my participants' own interpretations apart from the shape of my interview questions? And how much can I read into someone's memory of childhood without quietly turning it into proof of causation? That's something I expect I'll only really learn once I'm in the field.</p>
     </div>
   </section>
 
 </main>
 
 <footer>
-  <p>Once Upon a Gender — a research proposal presented live, page by page, rather than slide by slide.</p>
+  <svg class="princess-flourish" aria-hidden="true"><use href="#princess-icon"/></svg>
+  <p>Once Upon a Gender — PLS 210 · Fall 2026. Questions welcome, especially the ones I haven't thought of yet.</p>
 </footer>
 
+<script>
+(function(){
+  var ids = ['hero','poll','puzzle','question','epistemology','contribution','literature','framework','expect','ai','reflection'];
+  var sections = ids.map(function(id){ return document.getElementById(id); }).filter(Boolean);
+  var n = sections.length;
+  var track = document.getElementById('jtrack');
+  var path = document.getElementById('jpath');
+  var dotsWrap = document.getElementById('jdots');
+  var crown = document.getElementById('jcrown');
+  var countEl = document.getElementById('jcount');
+  var prevBtn = document.getElementById('prevBtn');
+  var nextBtn = document.getElementById('nextBtn');
+  var current = 0;
+  var points = [];
+  var dotEls = [];
+  var waveAmp = 12;
+
+  function layout(){
+    var w = track.clientWidth, h = track.clientHeight;
+    points = []; dotsWrap.innerHTML = ''; dotEls = [];
+    for (var i=0;i<n;i++){
+      var x = n===1 ? w/2 : (i/(n-1))*(w-24)+12;
+      var y = h/2 + Math.sin(i*1.35)*waveAmp;
+      points.push({x:x,y:y});
+      var d = document.createElement('div');
+      d.className = 'jdot'; d.style.left = x+'px'; d.style.top = y+'px';
+      dotsWrap.appendChild(d); dotEls.push(d);
+    }
+    var dPath = points.map(function(p,i){ return (i===0?'M':'L')+p.x+','+p.y; }).join(' ');
+    path.setAttribute('d', dPath);
+    updateCrown(current, true);
+  }
+
+  function updateCrown(i, instant){
+    if(!points[i]) return;
+    if(instant){ crown.style.transition='none'; }
+    crown.style.left = points[i].x+'px'; crown.style.top = points[i].y+'px';
+    if(instant){ crown.offsetHeight; crown.style.transition=''; }
+    dotEls.forEach(function(d,idx){ d.classList.toggle('active', idx===i); d.classList.toggle('seen', idx<i); });
+    countEl.textContent = (i+1)+' / '+n;
+    prevBtn.disabled = i===0; nextBtn.disabled = i===n-1;
+  }
+
+  function goTo(i){ if(i<0 || i>=n) return; sections[i].scrollIntoView({behavior:'smooth', block:'start'}); }
+
+  prevBtn.addEventListener('click', function(){ goTo(current-1); });
+  nextBtn.addEventListener('click', function(){ goTo(current+1); });
+  window.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight' || e.key==='PageDown'){ e.preventDefault(); goTo(current+1); }
+    else if(e.key==='ArrowLeft' || e.key==='PageUp'){ e.preventDefault(); goTo(current-1); }
+  });
+
+  var observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(entry.isIntersecting){
+        var idx = sections.indexOf(entry.target);
+        if(idx !== -1 && idx !== current){ current = idx; updateCrown(current); }
+      }
+    });
+  }, {threshold: 0.5});
+  sections.forEach(function(s){ observer.observe(s); });
+
+  window.addEventListener('resize', layout);
+  window.addEventListener('load', layout);
+  layout();
+
+  // hands-up poll counter (per-viewer, local only)
+  var countVal = 0;
+  try{ var saved = localStorage.getItem('handsUpCount'); if(saved!==null) countVal = parseInt(saved,10)||0; }catch(e){}
+  var pollCountEl = document.getElementById('pollCount');
+  function renderPoll(){ pollCountEl.textContent = countVal; try{ localStorage.setItem('handsUpCount', countVal); }catch(e){} }
+  document.getElementById('pollPlus').addEventListener('click', function(){ countVal++; renderPoll(); });
+  document.getElementById('pollMinus').addEventListener('click', function(){ countVal = Math.max(0,countVal-1); renderPoll(); });
+  renderPoll();
+})();
+</script>
 </body>
 </html>
